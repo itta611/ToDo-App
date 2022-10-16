@@ -6,9 +6,8 @@ export default async function assetHandler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        console.log(await prisma.star.findMany());
-        const stars = await prisma.star.findMany();
-        res.status(200).json(stars);
+        const ToDos = await prisma.ToDo.findMany();
+        res.status(200).json(ToDos);
       } catch (e) {
         console.error('Request error', e);
         res.status(500).json({ error: 'Error fetching posts' });
