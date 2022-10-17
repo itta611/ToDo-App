@@ -9,12 +9,16 @@ export default function Home() {
   const ref = useRef(null);
   const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
   const handleAdd = async () => {
-    const newTodo = await fetch('/api/todos', {
-      method: 'POST',
-      body: JSON.stringify({
-        title: ref.current.value,
-      }),
-    }).then((res) => res.json());
+    const newTodo = await fetch(
+      '/api/todos',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          title: ref.current.value,
+        }),
+      },
+      { rollbackOnError: true, revalidate: true }
+    ).then((res) => res.json());
     console.log(todos);
     mutate([newTodo, ...todos]);
     ref.current.value = '';
