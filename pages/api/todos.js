@@ -18,12 +18,13 @@ export default async function assetHandler(req, res) {
       try {
         const data = JSON.parse(req.body);
         const id = nanoid(12);
-        await prisma.ToDo.create({ data: { id, ...data } });
+        const createdData = await prisma.ToDo.create({ data: { id, ...data } });
+        console.log(createdData);
+        res.status(200).json(createdData);
       } catch (e) {
         console.error('Request error', e);
         res.status(500).json({ error: 'Error creating ToDos' });
       }
-      res.status(200).end();
       break;
     default:
       res.setHeader('Allow', ['GET', 'POST']);

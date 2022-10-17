@@ -8,17 +8,18 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Home() {
   const ref = useRef(null);
   const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
-  const handleAdd = () => {
-    const newTodo = {
-      title: ref.current.value,
-    };
-    ref.current.value = '';
-    fetch('/api/todos', {
+  const handleAdd = async () => {
+    const newTodo = await fetch('/api/todos', {
       method: 'POST',
-      body: JSON.stringify(newTodo),
-    });
-    mutate([...todos, newTodo], false);
+      body: JSON.stringify({
+        title: ref.current.value,
+      }),
+    }).then((res) => res.json());
+    console.log(todos);
+    mutate([newTodo, ...todos]);
+    ref.current.value = '';
   };
+  console.log(todos);
 
   return (
     <div className={styles.container}>
