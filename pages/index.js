@@ -7,14 +7,18 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Home() {
   const ref = useRef(null);
+  const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
   const handleAdd = () => {
     const newTodo = {
       title: ref.current.value,
     };
-    // useSWR('/api/todos', fetcher);
+    ref.current.value = '';
+    fetch('/api/todos', {
+      method: 'POST',
+      body: JSON.stringify(newTodo),
+    });
+    mutate([...todos, newTodo], false);
   };
-  const { data: todos } = useSWR('/api/todos', fetcher);
-  console.log(todos);
 
   return (
     <div className={styles.container}>
