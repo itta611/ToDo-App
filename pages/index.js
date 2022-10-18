@@ -8,8 +8,10 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Home() {
   const ref = useRef(null);
   const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
-  const handleAdd = async () => {
-    const newTodo = await fetch(
+  const handleAdd = () => {
+    const newTodo = { title: ref.current.value };
+    mutate([newTodo, ...todos]);
+    fetch(
       '/api/todos',
       {
         method: 'POST',
@@ -17,10 +19,8 @@ export default function Home() {
           title: ref.current.value,
         }),
       },
-      { rollbackOnError: true, revalidate: true }
+      { rollbackOnError: true, revalidate: false, revalidateOnFocus: false }
     ).then((res) => res.json());
-    console.log(todos);
-    mutate([newTodo, ...todos]);
     ref.current.value = '';
   };
   console.log(todos);

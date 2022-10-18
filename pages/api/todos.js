@@ -23,7 +23,6 @@ export default async function assetHandler(req, res) {
         const data = JSON.parse(req.body);
         const id = nanoid(12);
         const createdData = await prisma.ToDo.create({ data: { id, ...data } });
-        console.log(createdData);
         res.status(200).json(createdData);
       } catch (e) {
         console.error('Request error', e);
