@@ -7,7 +7,11 @@ export default async function assetHandler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        const ToDos = await prisma.ToDo.findMany();
+        const ToDos = await prisma.ToDo.findMany({
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
         res.status(200).json(ToDos);
       } catch (e) {
         console.error('Request error', e);

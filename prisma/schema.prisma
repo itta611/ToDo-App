@@ -13,7 +13,8 @@ datasource db {
 }
 
 model ToDo {
-  id     String  @id @db.VarChar(12)
-  title  String  @db.VarChar(255)
-  isDone Boolean @default(false)
+  id        String   @id @db.VarChar(12)
+  title     String   @db.VarChar(255)
+  isDone    Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
