@@ -17,6 +17,7 @@ export default function Home() {
     revalidateOnReconnect: false,
   });
   const handleAdd = async () => {
+    console.log(todos);
     const newToDo = await fetch('/api/todos', {
       method: 'POST',
       body: JSON.stringify({ title: ref.current.value }),
@@ -26,7 +27,7 @@ export default function Home() {
   };
 
   const handleDelete = async (id) => {
-    const udpatedToDos = todos.filter((todo) => todo.id !== id);
+    const udpatedToDos = todos.filter((todo) => todo.id !== id) || [];
     mutate(
       async () => {
         await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) => res.json());
