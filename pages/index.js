@@ -7,7 +7,15 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Home() {
   const ref = useRef(null);
-  const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
+  const {
+    data: todos,
+    error,
+    mutate,
+  } = useSWR('/api/todos', fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
   const handleAdd = async () => {
     const newToDo = await fetch('/api/todos', {
       method: 'POST',
