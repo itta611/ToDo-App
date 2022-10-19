@@ -9,25 +9,20 @@ export default function Home() {
   const ref = useRef(null);
   const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
   const handleAdd = async () => {
-    const newTodo = await fetch(
-      '/api/todos',
-      {
-        method: 'POST',
-        body: JSON.stringify({ title: ref.current.value }),
-      },
-      { rollbackOnError: true, revalidate: false }
-    ).then((res) => res.json());
-    mutate([newTodo, ...todos]);
+    const newToDo = await fetch('/api/todos', {
+      method: 'POST',
+      body: JSON.stringify({ title: ref.current.value }),
+    }).then((res) => res.json());
+    mutate([newToDo, ...todos], false);
     ref.current.value = '';
   };
 
   const handleDelete = async (id) => {
-    const deletedToDo = await fetch(
-      `/api/todos/${id}`,
-      { method: 'DELETE' },
-      { revalidate: false }
+    const deletedToDo = await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) =>
+      res.json()
     );
-    mutate(todos.filter((todo) => todo.id !== deletedToDo));
+    console.log(deletedToDo);
+    mutate(todos.filter((todo) => todo.id !== deletedToDo.id));
   };
 
   return (
