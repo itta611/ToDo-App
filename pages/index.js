@@ -18,11 +18,11 @@ export default function Home() {
   };
 
   const handleDelete = async (id) => {
+    mutate(todos.filter((todo) => todo.id !== id));
     const deletedToDo = await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) =>
       res.json()
     );
     console.log(deletedToDo);
-    mutate(todos.filter((todo) => todo.id !== deletedToDo.id));
   };
 
   return (
