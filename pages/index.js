@@ -18,11 +18,13 @@ export default function Home() {
   };
 
   const handleDelete = async (id) => {
-    mutate(todos.filter((todo) => todo.id !== id));
-    const deletedToDo = await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) =>
-      res.json()
+    const udpatedToDos = todos.filter((todo) => todo.id !== id);
+    mutate(
+      async () => {
+        await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) => res.json());
+      },
+      { optimisticData: udpatedToDos, rollbackOnError: true, revalidate: false }
     );
-    console.log(deletedToDo);
   };
 
   return (
