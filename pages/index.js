@@ -8,22 +8,23 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Home() {
   const ref = useRef(null);
   const { data: todos, error, mutate } = useSWR('/api/todos', fetcher);
-  const handleAdd = () => {
-    const newTodo = { title: ref.current.value };
-    mutate([newTodo, ...todos]);
-    fetch(
+  const handleAdd = async () => {
+    const newTodo = await fetch(
       '/api/todos',
       {
         method: 'POST',
-        body: JSON.stringify({
-          title: ref.current.value,
-        }),
+        body: JSON.stringify({ title: ref.current.value }),
       },
-      { rollbackOnError: true, revalidate: false, revalidateOnFocus: false }
+      { rollbackOnError: true, revalidate: false }
     ).then((res) => res.json());
+    mutate([newTodo, ...todos]);
     ref.current.value = '';
   };
-  console.log(todos);
+
+  const handleDelete = (id) => {
+    mutate(todos.filter((todo) => todo.id !== id));
+    fetch(`/api/todos/${id}`, { method: 'DELETE' }, { revalidate: false });
+  };
 
   return (
     <div className={styles.container}>
@@ -41,7 +42,7 @@ export default function Home() {
           {todos.map((todo) => (
             <li key={todo.id}>
               <span>{todo.title}</span>
-              <button>Delete</button>
+              <button onClick={() => handleDelete(todo.id)}>Delete</button>
             </li>
           ))}
         </ul>

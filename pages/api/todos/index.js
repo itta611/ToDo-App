@@ -1,8 +1,8 @@
-import prisma from '../../lib/prisma';
+import prisma from '../../../lib/prisma';
 import { nanoid } from 'nanoid';
 
 export default async function assetHandler(req, res) {
-  const { method } = req;
+  const { method, body } = req;
 
   switch (method) {
     case 'GET':
@@ -20,7 +20,7 @@ export default async function assetHandler(req, res) {
       break;
     case 'POST':
       try {
-        const data = JSON.parse(req.body);
+        const data = JSON.parse(body);
         const id = nanoid(12);
         const createdData = await prisma.ToDo.create({ data: { id, ...data } });
         res.status(200).json(createdData);
