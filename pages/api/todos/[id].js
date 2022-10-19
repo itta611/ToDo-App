@@ -7,8 +7,8 @@ export default async function assetHandler(req, res) {
   switch (method) {
     case 'DELETE':
       try {
-        await prisma.ToDo.delete({ where: { id } });
-        res.status(200).json({ message: 'ToDo deleted' });
+        const deletedToDo = await prisma.ToDo.delete({ where: { id } });
+        res.status(200).json(deletedToDo);
       } catch (e) {
         console.error('Request error', e);
         res.status(500).json({ error: 'Error deleting ToDo' });

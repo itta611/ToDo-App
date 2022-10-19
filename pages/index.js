@@ -21,9 +21,13 @@ export default function Home() {
     ref.current.value = '';
   };
 
-  const handleDelete = (id) => {
-    mutate(todos.filter((todo) => todo.id !== id));
-    fetch(`/api/todos/${id}`, { method: 'DELETE' }, { revalidate: false });
+  const handleDelete = async (id) => {
+    const deletedToDo = await fetch(
+      `/api/todos/${id}`,
+      { method: 'DELETE' },
+      { revalidate: false }
+    );
+    mutate(todos.filter((todo) => todo.id !== deletedToDo));
   };
 
   return (
