@@ -30,9 +30,7 @@ export default function Home() {
   const handleDelete = async (id) => {
     const updatedToDos = todos.filter((todo) => todo.id !== id) || [];
     mutate(
-      async () => {
-        await fetch(`/api/todos/${id}`, { method: 'DELETE' });
-      },
+      async () => await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) => res.json()),
       { optimisticData: updatedToDos, rollbackOnError: true }
     );
   };
@@ -44,12 +42,11 @@ export default function Home() {
     );
     console.log(updatedToDos);
     mutate(
-      async () => {
+      async () =>
         await fetch(`/api/todos/${id}`, {
           method: 'PATCH',
           body: JSON.stringify({ isDone: isChecked }),
-        });
-      },
+        }).then((res) => res.json()),
       { optimisticData: updatedToDos, rollbackOnError: true }
     );
   };
