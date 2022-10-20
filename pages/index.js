@@ -17,8 +17,8 @@ export default function Home() {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
+
   const handleAdd = async () => {
-    console.log(todos);
     const newToDo = await fetch('/api/todos', {
       method: 'POST',
       body: JSON.stringify({ title: inputRef.current.value }),
@@ -31,28 +31,30 @@ export default function Home() {
     const updatedToDos = todos.filter((todo) => todo.id !== id) || [];
     mutate(
       async () => {
-        await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) => res.json());
+        await fetch(`/api/todos/${id}`, { method: 'DELETE' });
       },
-      { optimisticData: updatedToDos, rollbackOnError: true, revalidate: false }
+      { optimisticData: updatedToDos, rollbackOnError: true }
     );
   };
 
   const handleCheck = async (e, id) => {
     const isChecked = e.target.checked;
-    const updatedToDos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, isDone: isChecked };
-      }
-      return todo;
-    });
-    mutate(async () => {
-      await fetch(`/api/todos/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ isDone: !todos.find((todo) => todo.id === id).isDone }),
-      }).then((res) => res.json()),
-        { optimisticData: updatedToDos, rollbackOnError: true, revalidate: false };
-    });
+    const updatedToDos = Array.from(todos, (todo) =>
+      todo.id === id ? { ...todo, isDone: isChecked } : todo
+    );
+    console.log(updatedToDos);
+    mutate(
+      async () => {
+        await fetch(`/api/todos/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ isDone: isChecked }),
+        });
+      },
+      { optimisticData: updatedToDos, rollbackOnError: true }
+    );
   };
+
+  console.log(todos);
 
   return (
     <div className={styles.container}>
@@ -69,7 +71,11 @@ export default function Home() {
         <ul>
           {todos.map((todo) => (
             <li key={todo.id} className={styles.listitem}>
-              <input type="checkbox" onChange={(e) => handleCheck(e, todo.id)} />
+              <input
+                type="checkbox"
+                checked={todo.isDone}
+                onChange={(e) => handleCheck(e, todo.id)}
+              />
               <span ref={textRef} className={todo.isDone ? styles.done : null}>
                 {todo.title}
               </span>
