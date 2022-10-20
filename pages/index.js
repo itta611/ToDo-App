@@ -19,11 +19,15 @@ export default function Home() {
   });
 
   const handleAdd = async () => {
-    const newToDo = await fetch('/api/todos', {
-      method: 'POST',
-      body: JSON.stringify({ title: inputRef.current.value }),
-    }).then((res) => res.json());
-    mutate([newToDo, ...todos], false);
+    const updatedToDos = [{ title: inputRef.current.value }, ...todos];
+    mutate(
+      async () =>
+        await fetch('/api/todos', {
+          method: 'POST',
+          body: JSON.stringify({ title: inputRef.current.value }),
+        }).then((res) => res.json()),
+      { optimisticData: updatedToDos, rollbackOnError: true }
+    );
     inputRef.current.value = '';
   };
 
@@ -66,8 +70,8 @@ export default function Home() {
       <button onClick={handleAdd}>Add</button>
       {todos && (
         <ul>
-          {todos.map((todo) => (
-            <li key={todo.id} className={styles.listitem}>
+          {todos.map((todo, i) => (
+            <li key={i} className={[styles.listitem, todo.id || 'creating'].join(' ')}>
               <input
                 type="checkbox"
                 checked={todo.isDone}

@@ -19,3 +19,8 @@
 .done {
   text-decoration: line-through;
 }
+
+.creating {
+  opacity: 0.7;
+  pointer-events: none;
+}

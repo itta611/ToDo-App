@@ -22,8 +22,13 @@ export default async function assetHandler(req, res) {
       try {
         const data = JSON.parse(body);
         const id = nanoid(12);
-        const createdData = await prisma.ToDo.create({ data: { id, ...data } });
-        res.status(200).json(createdData);
+        await prisma.ToDo.create({ data: { id, ...data } });
+        const updatedTodos = await prisma.ToDo.findMany({
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+        res.status(200).json(updatedTodos);
       } catch (e) {
         console.error('Request error', e);
         res.status(500).json({ error: 'Error creating ToDos' });
