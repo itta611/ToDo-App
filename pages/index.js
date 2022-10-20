@@ -6,7 +6,8 @@ import styles from '../styles/Home.module.css';
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 export default function Home() {
-  const ref = useRef(null);
+  const inputRef = useRef(null);
+  const textRef = useRef(null);
   const {
     data: todos,
     error,
@@ -20,20 +21,37 @@ export default function Home() {
     console.log(todos);
     const newToDo = await fetch('/api/todos', {
       method: 'POST',
-      body: JSON.stringify({ title: ref.current.value }),
+      body: JSON.stringify({ title: inputRef.current.value }),
     }).then((res) => res.json());
     mutate([newToDo, ...todos], false);
-    ref.current.value = '';
+    inputRef.current.value = '';
   };
 
   const handleDelete = async (id) => {
-    const udpatedToDos = todos.filter((todo) => todo.id !== id) || [];
+    const updatedToDos = todos.filter((todo) => todo.id !== id) || [];
     mutate(
       async () => {
         await fetch(`/api/todos/${id}`, { method: 'DELETE' }).then((res) => res.json());
       },
-      { optimisticData: udpatedToDos, rollbackOnError: true, revalidate: false }
+      { optimisticData: updatedToDos, rollbackOnError: true, revalidate: false }
     );
+  };
+
+  const handleCheck = async (e, id) => {
+    const isChecked = e.target.checked;
+    const updatedToDos = todos.map((todo) => {
+      if (todo.id === id) {
+        return { ...todo, isDone: isChecked };
+      }
+      return todo;
+    });
+    mutate(async () => {
+      await fetch(`/api/todos/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ isDone: !todos.find((todo) => todo.id === id).isDone }),
+      }).then((res) => res.json()),
+        { optimisticData: updatedToDos, rollbackOnError: true, revalidate: false };
+    });
   };
 
   return (
@@ -45,13 +63,16 @@ export default function Home() {
       </Head>
 
       <h1>ToDos</h1>
-      <input placeholder="ToDo" ref={ref} />
+      <input placeholder="ToDo" ref={inputRef} />
       <button onClick={handleAdd}>Add</button>
       {todos && (
         <ul>
           {todos.map((todo) => (
-            <li key={todo.id}>
-              <span>{todo.title}</span>
+            <li key={todo.id} className={styles.listitem}>
+              <input type="checkbox" onChange={(e) => handleCheck(e, todo.id)} />
+              <span ref={textRef} className={todo.isDone ? styles.done : null}>
+                {todo.title}
+              </span>
               <button onClick={() => handleDelete(todo.id)}>Delete</button>
             </li>
           ))}
