@@ -71,7 +71,7 @@ export default function Home() {
       {todos && (
         <ul>
           {todos.map((todo, i) => (
-            <li key={i} className={[styles.listitem, todo.id || 'creating'].join(' ')}>
+            <li key={i} className={[styles.listitem, todo.id ? 'creating' : ''].join(' ')}>
               <input
                 type="checkbox"
                 checked={todo.isDone}
