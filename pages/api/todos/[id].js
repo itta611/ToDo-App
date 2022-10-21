@@ -33,6 +33,7 @@ export default async function assetHandler(req, res) {
           },
         });
         res.status(200).json(updatedTodos);
+        break;
       } catch (e) {
         console.error('Request error', e);
         res.status(500).json({ error: 'Error updating ToDo' });
